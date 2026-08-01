@@ -115,3 +115,54 @@ header p {
     background:#2ea043;
 
 }
+
+.profile-card{
+
+    margin-top:2rem;
+
+    text-align:center;
+
+}
+
+.profile-card img{
+
+    width:150px;
+
+    border-radius:50%;
+
+    margin-bottom:1rem;
+
+}
+
+.profile-card h2{
+
+    margin-bottom:.3rem;
+
+}
+
+.profile-card>p{
+
+    margin-bottom:.6rem;
+
+}
+
+.stats{
+
+    margin-top:1rem;
+
+    display:flex;
+
+    justify-content:space-around;
+
+}
+.loading{
+
+    margin-top:2rem;
+
+    text-align:center;
+
+    color:#8b949e;
+
+    font-size:1.1rem;
+
+}
