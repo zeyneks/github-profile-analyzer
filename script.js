@@ -1,6 +1,7 @@
 const usernameInput = document.querySelector("#username");
 const searchButton = document.querySelector("#search-btn");
 const profileContainer = document.querySelector("#profile-container");
+const reposContainer = document.querySelector("#repos-container");
 
 searchButton.addEventListener("click", searchProfile);
 usernameInput.addEventListener("keydown", function(event) {
@@ -24,7 +25,7 @@ function searchProfile() {
     showLoading();
 
     fetchGitHubProfile(username);
-
+    fetchGitHubRepos(username);
 }
 
 function fetchGitHubProfile(username) {
@@ -45,6 +46,17 @@ function fetchGitHubProfile(username) {
     displayProfile(data);
 
 });
+
+}
+function fetchGitHubRepos(username) {
+
+    fetch(`https://api.github.com/users/${username}/repos`)
+        .then(response => response.json())
+        .then(data => {
+
+            console.log(data);
+
+        });
 
 }
 
