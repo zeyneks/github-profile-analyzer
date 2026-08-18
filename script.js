@@ -1,77 +1,103 @@
 const usernameInput = document.querySelector("#username");
 const searchButton = document.querySelector("#search-btn");
 const profileContainer = document.querySelector("#profile-container");
-const reposContainer = document.querySelector("#repos-container");
 
+
+// Search when button is clicked
 searchButton.addEventListener("click", searchProfile);
-usernameInput.addEventListener("keydown", function(event) {
+
+
+// Search when Enter is pressed
+usernameInput.addEventListener("keydown", function (event) {
 
     if (event.key === "Enter") {
-
         searchProfile();
-
     }
 
 });
+
 
 function searchProfile() {
 
     const username = usernameInput.value.trim();
 
+    // Check if username is empty
     if (username === "") {
+
         alert("Please enter a GitHub username.");
         return;
+
     }
+
     showLoading();
 
     fetchGitHubProfile(username);
-    fetchGitHubRepos(username);
+
 }
+
+
+function showLoading() {
+
+    profileContainer.innerHTML = `
+        <div class="loading">
+            Loading profile...
+        </div>
+    `;
+
+}
+
 
 function fetchGitHubProfile(username) {
 
     fetch(`https://api.github.com/users/${username}`)
-        .then(response => response.json())
-      .then(data => {
 
-    if (data.message === "Not Found") {
+        .then(response => {
 
-        profileContainer.innerHTML = `
-            <h2>User Not Found 😢</h2>
-        `;
+            if (!response.ok) {
+                throw new Error(`GitHub API error: ${response.status}`);
+            }
 
-        return;
-    }
+            return response.json();
 
-    displayProfile(data);
+        })
 
-});
-
-}
-function fetchGitHubRepos(username) {
-
-    fetch(`https://api.github.com/users/${username}/repos`)
-        .then(response => response.json())
         .then(data => {
 
-            console.log(data);
+            displayProfile(data);
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            profileContainer.innerHTML = `
+                <div class="error-message">
+                    <h2>Unable to load profile</h2>
+                    <p>Something went wrong while contacting GitHub.</p>
+                </div>
+            `;
 
         });
 
 }
+
 
 function displayProfile(data) {
 
     profileContainer.innerHTML = `
         <div class="profile-card">
 
-            <img src="${data.avatar_url}" alt="${data.login}">
+            <img
+                src="${data.avatar_url}"
+                alt="${data.login}"
+            >
 
-            <h2>${data.name}</h2>
+            <h2>${data.name || data.login}</h2>
 
             <p>@${data.login}</p>
 
-            <p>${data.bio}</p>
+            <p>${data.bio || "No bio available."}</p>
 
             <div class="stats">
 
@@ -82,17 +108,6 @@ function displayProfile(data) {
                 <p>Repositories: ${data.public_repos}</p>
 
             </div>
-
-        </div>
-    `;
-
-}
-function showLoading() {
-
-    profileContainer.innerHTML = `
-        <div class="loading">
-
-            Loading profile...
 
         </div>
     `;
