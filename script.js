@@ -1,6 +1,7 @@
 const usernameInput = document.querySelector("#username");
 const searchButton = document.querySelector("#search-btn");
 const profileContainer = document.querySelector("#profile-container");
+const reposContainer = document.querySelector("#repos-container");
 
 
 // Search when button is clicked
@@ -32,6 +33,7 @@ function searchProfile() {
     showLoading();
 
     fetchGitHubProfile(username);
+    fetchGitHubRepos(username);
 
 }
 
@@ -43,6 +45,8 @@ function showLoading() {
             Loading profile...
         </div>
     `;
+
+    reposContainer.innerHTML = "";
 
 }
 
@@ -69,7 +73,7 @@ function fetchGitHubProfile(username) {
 
         .catch(error => {
 
-            console.error(error);
+            console.error("Profile error:", error);
 
             profileContainer.innerHTML = `
                 <div class="error-message">
@@ -111,5 +115,77 @@ function displayProfile(data) {
 
         </div>
     `;
+
+}
+
+
+function fetchGitHubRepos(username) {
+
+    fetch(`https://api.github.com/users/${username}/repos`)
+
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(`GitHub API error: ${response.status}`);
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            reposContainer.innerHTML = "";
+
+            data.forEach(repo => {
+
+                reposContainer.innerHTML += `
+                    <div class="repo-card">
+
+                        <h3>${repo.name}</h3>
+
+                        <p>
+                            ${repo.description || "No description available."}
+                        </p>
+
+                        <div class="repo-stats">
+
+                            <span>⭐ ${repo.stargazers_count}</span>
+
+                            <span>🍴 ${repo.forks_count}</span>
+
+                            <span>
+                                💻 ${repo.language || "Not specified"}
+                            </span>
+
+                        </div>
+
+                        <a
+                            href="${repo.html_url}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            View Repository →
+                        </a>
+
+                    </div>
+                `;
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error("Repository error:", error);
+
+            reposContainer.innerHTML = `
+                <div class="error-message">
+                    <h2>Unable to load repositories</h2>
+                    <p>Something went wrong while fetching repositories.</p>
+                </div>
+            `;
+
+        });
 
 }
